@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-background: #0A0A0B;
+  --color-surface: #121214;
+  --color-border: rgba(255, 255, 255, 0.05);
+  --color-brand: #6366f1;
+}
+
+body {
+  @apply bg-background text-neutral-300 antialiased h-full overflow-hidden;
+}
+
+html {
+  @apply h-full m-0;
+}
+
+#root {
+  @apply h-full;
+}
