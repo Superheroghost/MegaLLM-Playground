@@ -22,7 +22,7 @@ export function MarkdownView({ content, className }: MarkdownViewProps) {
         remarkPlugins={[remarkGfm]}
         components={{
           code(props) {
-            const {children, className, node, ...rest} = props
+            const {children, className, node, ref, ...rest} = props
             const match = /language-(\w+)/.exec(className || '')
             return match ? (
               <div className="bg-[#161618] border border-white/10 rounded-lg overflow-hidden font-mono text-[13px] my-4 not-prose">
@@ -36,7 +36,7 @@ export function MarkdownView({ content, className }: MarkdownViewProps) {
                   </button>
                 </div>
                 <SyntaxHighlighter
-                  {...rest}
+                  {...rest as any}
                   PreTag="div"
                   children={String(children).replace(/\n$/, '')}
                   language={match[1]}
@@ -50,7 +50,7 @@ export function MarkdownView({ content, className }: MarkdownViewProps) {
                 />
               </div>
             ) : (
-              <code {...rest} className={className}>
+              <code ref={ref as any} {...rest} className={className}>
                 {children}
               </code>
             )

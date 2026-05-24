@@ -16,6 +16,7 @@ export default function App() {
   const [systemPrompt, setSystemPrompt] = useState('You are a highly efficient software engineer for the MegaLLM platform. Provide clean, secure, and production-ready code snippets.');
   const [temperature, setTemperature] = useState<number>(0.74);
   const [maxTokens, setMaxTokens] = useState<number>(4096);
+  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('megallm_api_key') || '');
   
   const [conversations, setConversations] = useState<Conversation[]>(() => {
     const saved = localStorage.getItem('megallm_conversations');
@@ -34,7 +35,9 @@ export default function App() {
   const messages = currentConversation?.messages || [];
 
   useEffect(() => {
-    fetch('/api/models')
+    fetch('https://ai.megallm.io/v1/models', {
+      headers: apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}
+    })
       .then(r => r.json())
       .then(data => {
         if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
@@ -55,6 +58,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('megallm_conversations', JSON.stringify(conversations));
   }, [conversations]);
+
+  useEffect(() => {
+    localStorage.setItem('megallm_api_key', apiKey);
+  }, [apiKey]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -119,9 +126,12 @@ export default function App() {
       }
       payloadMessages.push(...newMessages);
 
-      const response = await fetch('/api/chat/completions', {
+      const response = await fetch('https://ai.megallm.io/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
+        },
         body: JSON.stringify({
           model: selectedModel,
           messages: payloadMessages,
@@ -304,6 +314,21 @@ export default function App() {
 
       {/* Right Sidebar: Feature Controls */}
       <aside className="w-72 bg-surface border-l border-border p-5 flex flex-col gap-6 shrink-0">
+        <div className="space-y-4">
+           <h2 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Authentication</h2>
+           <div className="space-y-2">
+              <input 
+                 type="password"
+                 value={apiKey}
+                 onChange={(e) => setApiKey(e.target.value)}
+                 placeholder="MegaLLM API Key (sk-...)"
+                 className="w-full bg-[#161618] border border-white/10 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500/50 font-mono transition-colors"
+              />
+           </div>
+        </div>
+
+        <div className="h-px bg-white/5"></div>
+
         <div className="space-y-4">
            <h2 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Parameters</h2>
            <div className="space-y-5">
