@@ -1,0 +1,6 @@
+{
+  "name": "MegaLLM Playground",
+  "description": "A feature-rich chat AI interface powered by the MegaLLM API, showcasing model selection, parameter tuning, system prompts, and streaming chat.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
